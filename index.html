@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autoloc — Location de voitures au Maroc</title>
+  <meta name="description" content="Location de voitures à Casablanca, Marrakech, Rabat, Tanger, Agadir. Kilométrage illimité, remise des clés à l'aéroport, prix affichés TTC.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=7">
+</head>
+<body>
+
+  <div class="announce" id="announceBar" role="region" aria-label="Annonces">
+    <div class="container announce-inner">
+      <span class="announce-label mono">Annonce</span>
+      <p id="announceText" class="announce-text"></p>
+      <button class="announce-close" id="announceClose" aria-label="Masquer les annonces"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <p>Agence Casablanca ouverte 24h/24 — <a href="tel:+212600000000">+212 6 00 00 00 00</a></p>
+      <p class="hide-sm">Paiement à la remise des clés accepté</p>
+    </div>
+  </div>
+
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#accueil" class="logo">Autoloc<span class="logo-tag">MA</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#flotte">La flotte</a>
+        <a href="#offres">Offres</a>
+        <a href="#etapes">Comment ça marche</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#agences">Agences</a>
+        <a href="#apropos">À propos</a>
+        <a href="#faq">Questions</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="nav-btn" id="favBtn" title="Favoris">Favoris <span class="count" id="favCount">0</span></button>
+        <button class="nav-btn" id="myBookingsBtn" title="Mes réservations">Réservations <span class="count" id="bookCount">0</span></button>
+        <button class="nav-btn icon" id="themeToggle" title="Changer de thème" aria-label="Changer de thème"><i class="fa-solid fa-moon"></i></button>
+        <button class="nav-btn icon burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="accueil">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Location de voitures — Maroc, depuis 2010</p>
+        <h1>Des voitures propres, des prix clairs, et <em>quelqu'un qui décroche</em> à 3h du matin.</h1>
+        <p class="lead">On loue une cinquantaine de voitures entre Casablanca et Agadir. Pas de frais cachés au comptoir, pas de franchise surprise : le prix affiché est celui que vous payez.</p>
+        <dl class="hero-facts">
+          <div><dt>Note Google</dt><dd>4,8<small>/5</small></dd></div>
+          <div><dt>Locations en 2025</dt><dd>3 140</dd></div>
+          <div><dt>Âge moyen du parc</dt><dd>14<small> mois</small></dd></div>
+        </dl>
+      </div>
+      <figure class="hero-media">
+        <img src="images/hero.jpg" alt="Voiture de sport garée sur une route" onerror="this.parentElement.classList.add('no-img')">
+        <div class="hero-stock" id="heroStock"></div>
+      </figure>
+    </div>
+
+    <div class="container">
+      <form class="search-bar" id="searchForm">
+        <div class="field">
+          <label for="pickupLocation">Prise en charge</label>
+          <select id="pickupLocation" required>
+            <option value="">Choisir une ville</option>
+          </select>
+        </div>
+        <div class="field hidden" id="returnWrap">
+          <label for="returnLocation">Restitution</label>
+          <select id="returnLocation"></select>
+        </div>
+        <div class="field">
+          <label for="pickupDate">Départ</label>
+          <div class="dt"><input type="date" id="pickupDate" required><input type="time" id="pickupTime" value="10:00" required></div>
+        </div>
+        <div class="field">
+          <label for="returnDate">Retour</label>
+          <div class="dt"><input type="date" id="returnDate" required><input type="time" id="returnTime" value="10:00" required></div>
+        </div>
+        <div class="field">
+          <label for="searchCategory">Type</label>
+          <select id="searchCategory">
+            <option value="all">Tous</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Voir les voitures</button>
+      </form>
+      <div class="search-meta">
+        <label class="check"><input type="checkbox" id="differentReturn"> Rendre la voiture dans une autre ville</label>
+        <span id="searchSummary"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Included strip -->
+  <section class="strip">
+    <div class="container strip-inner">
+      <p><strong>Kilométrage illimité</strong>sur toutes les voitures</p>
+      <p><strong>Remise à l'aéroport</strong>sans supplément</p>
+      <p><strong>Annulation gratuite</strong>jusqu'à 48h avant</p>
+      <p><strong>Assistance 24h/24</strong>partout au Maroc</p>
+    </div>
+  </section>
+
+  <!-- Fleet -->
+  <section class="section" id="flotte">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">01</span>
+        <div>
+          <h2>La flotte</h2>
+          <p>Chaque voiture a sa propre annonce : kilométrage réel, motorisation, conditions et stock par agence. Prix par jour, TTC, assurance de base comprise.</p>
+        </div>
+      </header>
+
+      <div class="filters">
+        <div class="filter-tabs" id="categoryTabs"></div>
+        <div class="filter-row">
+          <div class="search-input"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="carSearch" placeholder="Modèle, marque…"></div>
+          <select id="filterTransmission" aria-label="Boîte">
+            <option value="all">Boîte</option>
+            <option value="Manuelle">Manuelle</option>
+            <option value="Automatique">Automatique</option>
+          </select>
+          <select id="filterFuel" aria-label="Carburant">
+            <option value="all">Carburant</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Essence">Essence</option>
+            <option value="Hybride">Hybride</option>
+            <option value="Électrique">Électrique</option>
+          </select>
+          <select id="filterSeats" aria-label="Places">
+            <option value="0">Places</option>
+            <option value="5">5 et +</option>
+            <option value="7">7 et +</option>
+          </select>
+          <select id="sortBy" aria-label="Trier">
+            <option value="default">Trier</option>
+            <option value="priceAsc">Prix ↑</option>
+            <option value="priceDesc">Prix ↓</option>
+            <option value="rating">Note</option>
+            <option value="offers">Offres d'abord</option>
+          </select>
+        </div>
+        <div class="filter-foot">
+          <div class="range">
+            <label for="priceRange">Jusqu'à <strong id="priceValue">2000</strong> DH/jour</label>
+            <input type="range" id="priceRange" min="200" max="2000" step="50" value="2000">
+          </div>
+          <label class="check"><input type="checkbox" id="onlyFav"> Mes favoris</label>
+          <button class="link-btn" id="resetFilters" type="button">Effacer les filtres</button>
+        </div>
+      </div>
+
+      <p class="results-count" id="resultsCount"></p>
+      <div class="cars-grid" id="carsGrid"></div>
+    </div>
+  </section>
+
+  <!-- Offers & news -->
+  <section class="section tint" id="offres">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Offres <em>&amp; annonces</em></h2>
+          <p>Les remises ci-dessous s'appliquent toutes seules au prix affiché. Elles se cumulent avec la remise durée.</p>
+        </div>
+      </header>
+      <div class="offers-layout">
+        <div class="offers" id="offersList"></div>
+        <aside class="news">
+          <h5>Actualités de l'agence</h5>
+          <ul id="newsList"></ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="etapes">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">03</span>
+        <div>
+          <h2>Comment ça se passe</h2>
+          <p>Quatre étapes, dont trois depuis votre canapé.</p>
+        </div>
+      </header>
+      <ol class="steps">
+        <li><span>01</span><h4>Vous réservez</h4><p>En ligne ou par WhatsApp. Confirmation immédiate par email avec votre numéro de dossier.</p></li>
+        <li><span>02</span><h4>On vous rappelle</h4><p>Un agent confirme l'heure et le lieu exacts, et répond à vos questions la veille du départ.</p></li>
+        <li><span>03</span><h4>Remise des clés</h4><p>À l'agence, à la sortie de l'aéroport ou devant votre hôtel. État des lieux en photos, 10 minutes.</p></li>
+        <li><span>04</span><h4>Retour</h4><p>Même niveau de carburant, on vérifie ensemble, la caution est débloquée dans la foulée.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Included -->
+  <section class="section tint" id="services">
+    <div class="container split">
+      <header class="section-head stacked">
+        <span class="num">04</span>
+        <div>
+          <h2>Ce qui est inclus,<br><em>et ce qui ne l'est pas</em></h2>
+          <p>On préfère tout écrire ici plutôt que de vous surprendre au comptoir.</p>
+        </div>
+      </header>
+      <div class="included">
+        <h5>Toujours inclus</h5>
+        <ul>
+          <li>Kilométrage illimité</li>
+          <li>Assurance responsabilité civile</li>
+          <li>Remise et retour à l'aéroport</li>
+          <li>Assistance routière 24h/24</li>
+          <li>Annulation gratuite jusqu'à 48h</li>
+          <li>Second conducteur dès 4 jours</li>
+        </ul>
+        <h5>En option</h5>
+        <ul class="paid">
+          <li>Livraison à l'hôtel ou au domicile <span>150 DH</span></li>
+          <li>Rendre dans une autre ville <span>300 DH</span></li>
+          <li>Assurance sans franchise <span>120 DH/j</span></li>
+          <li>Siège bébé ou rehausseur <span>dès 20 DH/j</span></li>
+          <li>Chauffeur privé (8h) <span>400 DH/j</span></li>
+          <li>Conducteur de moins de 25 ans <span>50 DH/j</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="section" id="tarifs">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">05</span>
+        <div>
+          <h2>Tarifs dégressifs</h2>
+          <p>La remise s'applique automatiquement, pas besoin de la demander.</p>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table class="price-table">
+          <thead><tr><th>Durée</th><th>Remise</th><th>Exemple — Clio 5</th><th>En plus</th></tr></thead>
+          <tbody>
+            <tr><td>1 à 3 jours</td><td class="mono">—</td><td class="mono">300 DH/j</td><td>—</td></tr>
+            <tr><td>4 à 13 jours</td><td class="mono accent">−10 %</td><td class="mono">270 DH/j</td><td>Second conducteur offert</td></tr>
+            <tr><td>14 jours et plus</td><td class="mono accent">−20 %</td><td class="mono">240 DH/j</td><td>Entretien et voiture de remplacement</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Première location ? Le code <span class="code">BIENVENUE10</span> retire 10 % de plus au moment du paiement.</p>
+    </div>
+  </section>
+
+  <!-- Agencies -->
+  <section class="section tint" id="agences">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">06</span>
+        <div>
+          <h2>Agences</h2>
+          <p>Huit adresses, dont six avec un comptoir à l'aéroport.</p>
+        </div>
+      </header>
+      <div class="agencies" id="agenciesGrid"></div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section dark" id="avis">
+    <div class="container">
+      <div class="testi-track" id="testiTrack"></div>
+      <div class="testi-nav">
+        <div class="dots" id="testiDots"></div>
+        <div>
+          <button class="arrow" id="prevTesti" aria-label="Avis précédent"><i class="fa-solid fa-arrow-left"></i></button>
+          <button class="arrow" id="nextTesti" aria-label="Avis suivant"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" id="apropos">
+    <div class="container">
+      <header class="section-head">
+        <span class="num">07</span>
+        <div>
+          <h2>Qui sommes-nous</h2>
+          <p>Une entreprise familiale, pas une franchise. Les mêmes personnes répondent au téléphone depuis 2010.</p>
+        </div>
+      </header>
+      <div class="about">
+        <div class="about-text">
+          <p class="about-lead">Autoloc a commencé avec quatre Logan et un comptoir de trois mètres carrés à l'aéroport Mohammed V. Quinze ans plus tard, on a huit agences et une cinquantaine de voitures, mais la règle n'a pas changé : <em>le prix annoncé est le prix payé.</em></p>
+          <p>On renouvelle le parc tous les trois ans, on fait le contrôle technique deux fois plus souvent que la loi l'exige, et chaque voiture passe par l'atelier entre deux locations — vidange, pneus, nettoyage intérieur complet.</p>
+          <p>Si quelque chose ne va pas pendant votre location, vous appelez le même numéro que pour réserver. Pas de plateforme, pas de répondeur.</p>
+        </div>
+        <dl class="about-facts">
+          <div><dt>Fondée</dt><dd>2010, Casablanca</dd></div>
+          <div><dt>Équipe</dt><dd>23 personnes</dd></div>
+          <div><dt>Flotte</dt><dd>52 voitures, 12 modèles</dd></div>
+          <div><dt>Renouvellement</dt><dd>Tous les 36 mois max.</dd></div>
+          <div><dt>Agrément</dt><dd>Ministère du Transport n° 00/0000</dd></div>
+          <div><dt>Assureur</dt><dd>Partenaire agréé ACAPS</dd></div>
+        </dl>
+      </div>
+      <div class="docs">
+        <h5>À préparer avant le départ</h5>
+        <ol>
+          <li><span class="mono">01</span><strong>Permis de conduire</strong>Original, valide depuis 2 ans (3 ans pour le luxe). Permis international conseillé hors UE.</li>
+          <li><span class="mono">02</span><strong>Pièce d'identité</strong>CIN pour les résidents, passeport pour les visiteurs.</li>
+          <li><span class="mono">03</span><strong>Carte bancaire</strong>Au nom du conducteur, pour bloquer la caution. Les cartes prépayées ne sont pas acceptées.</li>
+          <li><span class="mono">04</span><strong>Numéro de dossier</strong>Celui de l'email de confirmation, ou votre numéro de téléphone.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container split">
+      <header class="section-head stacked">
+        <span class="num">08</span>
+        <div>
+          <h2>Questions fréquentes</h2>
+          <p>Pas trouvé votre réponse ? <a class="underline" href="#contact">Écrivez-nous</a>, on répond en général dans l'heure.</p>
+        </div>
+      </header>
+      <div class="faq" id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section tint" id="contact">
+    <div class="container split">
+      <div>
+        <header class="section-head stacked">
+          <span class="num">09</span>
+          <div><h2>Nous joindre</h2></div>
+        </header>
+        <dl class="contact-list">
+          <div><dt>Téléphone</dt><dd><a href="tel:+212600000000">+212 6 00 00 00 00</a></dd></div>
+          <div><dt>WhatsApp</dt><dd><a href="https://wa.me/212600000000" target="_blank" rel="noopener">+212 6 00 00 00 00</a></dd></div>
+          <div><dt>Email</dt><dd><a href="mailto:contact@autoloc.ma">contact@autoloc.ma</a></dd></div>
+          <div><dt>Siège</dt><dd>123 Bd Mohammed V, Casablanca</dd></div>
+        </dl>
+        <div class="map">
+          <iframe title="Carte de l'agence de Casablanca" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=-7.66%2C33.56%2C-7.58%2C33.61&layer=mapnik"></iframe>
+        </div>
+      </div>
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="row-2">
+          <label>Nom <input type="text" name="name" required></label>
+          <label>Téléphone <input type="tel" name="phone" required pattern="^(\+212|0)[5-7][0-9]{8}$" placeholder="06 12 34 56 78"></label>
+        </div>
+        <label>Email <input type="email" name="email" required></label>
+        <label>Sujet
+          <select name="subject">
+            <option>Réservation</option><option>Location longue durée</option><option>Location avec chauffeur</option><option>Réclamation</option><option>Autre</option>
+          </select>
+        </label>
+        <label>Message <textarea name="message" rows="5" required></textarea></label>
+        <button class="btn btn-primary" type="submit">Envoyer le message</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <a href="#accueil" class="logo">Autoloc<span class="logo-tag">MA</span></a>
+          <p>Location de voitures indépendante, fondée à Casablanca en 2010.</p>
+        </div>
+        <form id="newsletterForm" class="newsletter">
+          <label for="nlEmail">Une fois par mois, nos promos. Rien d'autre.</label>
+          <div><input id="nlEmail" type="email" placeholder="votre@email.com" required><button class="btn btn-primary" type="submit">S'inscrire</button></div>
+        </form>
+      </div>
+      <div class="footer-grid">
+        <div><h5>Location</h5><a href="#flotte">La flotte</a><a href="#offres">Offres en cours</a><a href="#tarifs">Tarifs</a><a href="#agences">Agences</a></div>
+        <div><h5>Infos</h5><a href="#apropos">À propos</a><a href="#" data-modal="termsModal">Conditions générales</a><a href="#apropos">Documents requis</a><a href="#" data-modal="termsModal">Annulation</a></div>
+        <div><h5>Suivez-nous</h5><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TikTok</a></div>
+        <div><h5>Paiement</h5><p>Visa, Mastercard, espèces à l'agence, virement.</p></div>
+      </div>
+      <p class="copyright">© <span id="year"></span> Autoloc SARL — RC Casablanca 000000 · Photos des modèles : Wikimedia Commons (CC BY-SA), photo d'accueil : Unsplash</p>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/212600000000?text=Bonjour%2C%20je%20souhaite%20louer%20une%20voiture" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+  <button class="back-top" id="backTop" aria-label="Haut de page"><i class="fa-solid fa-arrow-up"></i></button>
+
+  <!-- Car details -->
+  <div class="modal" id="detailsModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      <div id="detailsContent"></div>
+    </div>
+  </div>
+
+  <!-- Booking -->
+  <div class="modal" id="bookingModal">
+    <div class="modal-box large">
+      <button class="modal-close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      <ol class="stepper">
+        <li class="active" data-step="1"><span>1</span>Dates</li>
+        <li data-step="2"><span>2</span>Options</li>
+        <li data-step="3"><span>3</span>Conducteur</li>
+        <li data-step="4"><span>4</span>Paiement</li>
+      </ol>
+      <form id="bookingForm" novalidate>
+        <div class="booking-layout">
+          <div class="booking-steps">
+            <div class="bstep active" data-step="1">
+              <h3>Où et quand ?</h3>
+              <div class="row-2">
+                <label>Prise en charge <select id="bPickup" required></select></label>
+                <label>Restitution <select id="bReturn" required></select></label>
+              </div>
+              <div class="row-2">
+                <label>Départ <input type="date" id="bStartDate" required></label>
+                <label>Heure <input type="time" id="bStartTime" value="10:00" required></label>
+              </div>
+              <div class="row-2">
+                <label>Retour <input type="date" id="bEndDate" required></label>
+                <label>Heure <input type="time" id="bEndTime" value="10:00" required></label>
+              </div>
+              <label>Remise des clés
+                <select id="bDelivery">
+                  <option value="0">En agence — gratuit</option>
+                  <option value="0">À l'aéroport — gratuit</option>
+                  <option value="150">À l'hôtel ou au domicile — 150 DH</option>
+                </select>
+              </label>
+            </div>
+            <div class="bstep" data-step="2">
+              <h3>Options</h3>
+              <div class="extras" id="extrasList"></div>
+              <h4>Assurance</h4>
+              <div class="extras" id="insuranceList"></div>
+            </div>
+            <div class="bstep" data-step="3">
+              <h3>Conducteur principal</h3>
+              <div class="row-2">
+                <label>Prénom <input type="text" id="dFirst" required autocomplete="given-name"></label>
+                <label>Nom <input type="text" id="dLast" required autocomplete="family-name"></label>
+              </div>
+              <div class="row-2">
+                <label>Email <input type="email" id="dEmail" required autocomplete="email"></label>
+                <label>Téléphone <input type="tel" id="dPhone" required autocomplete="tel" pattern="^(\+212|0)[5-7][0-9]{8}$|^\+?[0-9]{8,15}$"></label>
+              </div>
+              <div class="row-2">
+                <label>Date de naissance <input type="date" id="dBirth" required data-past data-view-offset="-30"></label>
+                <label>CIN ou passeport <input type="text" id="dId" required></label>
+              </div>
+              <div class="row-2">
+                <label>N° de permis <input type="text" id="dLicense" required></label>
+                <label>Permis obtenu le <input type="date" id="dLicenseDate" required data-past data-view-offset="-5"></label>
+              </div>
+              <label>N° de vol <span class="opt">facultatif — on suit les retards</span> <input type="text" id="dFlight" placeholder="AT 205"></label>
+              <p class="hint">21 ans minimum et 2 ans de permis. Entre 21 et 25 ans, un supplément de 50 DH/jour s'applique.</p>
+            </div>
+            <div class="bstep" data-step="4">
+              <h3>Paiement</h3>
+              <div class="pay-methods">
+                <label class="radio-card"><input type="radio" name="pay" value="card" checked> Carte bancaire</label>
+                <label class="radio-card"><input type="radio" name="pay" value="agency"> À l'agence</label>
+                <label class="radio-card"><input type="radio" name="pay" value="transfer"> Virement</label>
+              </div>
+              <div id="cardFields">
+                <label>Numéro de carte <input type="text" id="cardNumber" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number"></label>
+                <div class="row-2">
+                  <label>Expiration <input type="text" id="cardExp" maxlength="5" placeholder="MM/AA" autocomplete="cc-exp"></label>
+                  <label>CVV <input type="text" id="cardCvv" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="cc-csc"></label>
+                </div>
+              </div>
+              <div class="promo-input">
+                <input type="text" id="promoCode" placeholder="Code promo">
+                <button type="button" class="btn btn-ghost" id="applyPromo">Appliquer</button>
+              </div>
+              <p class="promo-msg" id="promoMsg"></p>
+              <label class="check"><input type="checkbox" id="acceptTerms" required> J'ai lu les <a href="#" class="underline" data-modal="termsModal">conditions de location</a></label>
+            </div>
+          </div>
+
+          <aside class="summary">
+            <div id="summaryCar"></div>
+            <ul class="summary-lines" id="summaryLines"></ul>
+            <div class="summary-total"><span>Total TTC</span><strong id="summaryTotal">0 DH</strong></div>
+            <p class="deposit" id="summaryDeposit"></p>
+          </aside>
+        </div>
+        <p class="form-error" id="bookingError" role="alert"></p>
+        <div class="booking-nav">
+          <button type="button" class="btn btn-ghost" id="prevStep">Retour</button>
+          <button type="button" class="btn btn-primary" id="nextStep">Continuer</button>
+          <button type="submit" class="btn btn-primary hidden" id="confirmBooking">Confirmer la réservation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      <div class="confirm" id="confirmContent"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="myBookingsModal">
+    <div class="modal-box large">
+      <button class="modal-close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      <h3>Mes réservations</h3>
+      <div id="myBookingsList"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="termsModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      <h3>Conditions de location</h3>
+      <div class="terms">
+        <h4>Documents</h4>
+        <ul><li>Permis de conduire valide depuis au moins 2 ans</li><li>CIN ou passeport</li><li>Carte bancaire au nom du conducteur pour la caution</li></ul>
+        <h4>Conditions</h4>
+        <ul><li>21 ans minimum, supplément entre 21 et 25 ans</li><li>Caution bloquée selon la catégorie, débloquée au retour</li><li>Voiture rendue avec le même niveau de carburant</li><li>Au-delà de 2h de retard, une journée supplémentaire est facturée</li></ul>
+        <h4>Annulation</h4>
+        <ul><li>Gratuite jusqu'à 48h avant le départ</li><li>50 % remboursés entre 48h et 24h</li><li>Non remboursable à moins de 24h</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="controls.js?v=7"></script>
+  <script src="script.js?v=7"></script>
+</body>
+</html>
